@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="WebEducativa-vscode" default="verify" basedir=".">
+    <description>Build independiente de NetBeans; conserva Java 8, JSP, Servlets y DAO.</description>
+    <property environment="env"/>
+    <property file="config/development.local.properties"/>
+    <property name="jdk.home" location="${env.JAVA8_HOME}"/>
+    <property name="glassfish.home" location="${env.GLASSFISH_HOME}"/>
+    <property name="mysql.connector.jar" location="lib/mysql-connector-java-5.1.16-bin.jar"/>
+    <property name="jdbc.sha256" value="e2d1339ea279d867fb825e0f1a455014bbee360e2a4a1e425033474d2335525d"/>
+
+    <target name="verify" description="Comprueba dependencias sin compilar ni conectar a MySQL.">
+        <fail message="Ejecutar Ant con Java 8 (JAVA8_HOME). El runtime del editor puede ser distinto.">
+            <condition><not><equals arg1="${ant.java.version}" arg2="1.8"/></not></condition>
+        </fail>
+        <fail message="Se requiere Apache Ant 1.10.15 o posterior compatible con Java 8.">
+            <condition><not><antversion atleast="1.10.15"/></not></condition>
+        </fail>
+        <condition property="javac.path" value="${jdk.home}/bin/javac.exe" else="${jdk.home}/bin/javac">
+            <os family="windows"/>
+        </condition>
+        <available file="${javac.path}" type="file" property="jdk.present"/>
+        <fail unless="jdk.present" message="Falta un JDK 8 con javac. Configurar JAVA8_HOME o jdk.home; un JRE no basta."/>
+        <available file="${jdk.home}/release" type="file" property="jdk.release.present"/>
+        <fail unless="jdk.release.present" message="Falta el archivo release del JDK seleccionado."/>
+        <loadfile property="jdk.release" srcfile="${jdk.home}/release"/>
+        <fail message="jdk.home debe apuntar a un JDK 8.">
+            <condition><not><contains string="${jdk.release}" substring="JAVA_VERSION=&quot;1.8."/></not></condition>
+        </fail>
+        <condition property="server.apis.present"><and>
+            <available file="${glassfish.home}/modules/javax.servlet-api.jar" type="file"/>
+            <available file="${glassfish.home}/modules/javax.servlet.jsp-api.jar" type="file"/>
+            <available file="${glassfish.home}/modules/javax.servlet.jsp.jstl-api.jar" type="file"/>
+            <available file="${glassfish.home}/modules/javax.servlet.jsp.jstl.jar" type="file"/>
+        </and></condition>
+        <fail unless="server.apis.present" message="Faltan API javax Servlet/JSP/JSTL. GLASSFISH_HOME debe ser la carpeta glassfish de GlassFish 4.1.1."/>
+        <available file="${mysql.connector.jar}" type="file" property="jdbc.present"/>
+        <fail unless="jdbc.present" message="Falta Connector/J 5.1.16 fuera de build/. Consultar lib/README.md; no se descargara automaticamente."/>
+        <checksum file="${mysql.connector.jar}" algorithm="SHA-256" property="${jdbc.sha256}" verifyproperty="jdbc.matches"/>
+        <fail message="El JAR JDBC no coincide con la copia auditada. Revisar procedencia y aprobar cualquier cambio de version.">
+            <condition><not><equals arg1="${jdbc.matches}" arg2="true"/></not></condition>
+        </fail>
+        <echo>Dependencias basicas verificadas. No prueba MySQL, la version exacta de GlassFish ni el funcionamiento de las JSP.</echo>
+    </target>
+
+    <target name="war" depends="verify" description="Compila fuentes y genera WAR sin iniciar ni desplegar el sistema.">
+        <!-- Una carpeta nueva por ejecucion evita reutilizar clases obsoletas. -->
+        <mkdir dir=".dev-build"/>
+        <tempfile property="stage.dir" destdir="${basedir}/.dev-build" prefix="war-"/>
+        <mkdir dir="${stage.dir}/classes"/>
+        <javac srcdir="src/java" destdir="${stage.dir}/classes" source="1.8" target="1.8"
+               encoding="UTF-8" debug="true" includeantruntime="false" fork="true" executable="${javac.path}">
+            <classpath>
+                <pathelement location="${glassfish.home}/modules/javax.servlet-api.jar"/>
+                <pathelement location="${mysql.connector.jar}"/>
+            </classpath>
+        </javac>
+        <mkdir dir="dist-vscode"/>
+        <war destfile="dist-vscode/WebEducativa.war" webxml="web/WEB-INF/web.xml" manifest="src/conf/MANIFEST.MF">
+            <fileset dir="web" excludes="WEB-INF/web.xml,WEB-INF/classes/**,WEB-INF/lib/**,WEB-INF/glassfish-web.xml"/>
+            <classes dir="${stage.dir}/classes"/>
+            <lib file="${mysql.connector.jar}"/>
+            <webinf dir="config" includes="glassfish-web.xml"/>
+        </war>
+        <echo>WAR: dist-vscode/WebEducativa.war. JSP sin precompilar; despliegue y pruebas pendientes.</echo>
+    </target>
+</project>

@@ -1,0 +1,12 @@
+{
+  "files.encoding": "utf8",
+  "editor.formatOnSave": false,
+  "java.autobuild.enabled": false,
+  "java.configuration.updateBuildConfiguration": "disabled",
+  "java.project.sourcePaths": ["src/java"],
+  "java.project.outputPath": ".dev-build/editor-classes",
+  "java.project.referencedLibraries": ["lib/*.jar"],
+  "java.import.exclusions": ["**/build/**", "**/.dev-build/**", "**/dist-vscode/**"],
+  "files.watcherExclude": {"**/build/**": true, "**/.dev-build/**": true, "**/dist-vscode/**": true},
+  "search.exclude": {"build/": true, ".dev-build/": true, "dist-vscode/": true}
+}

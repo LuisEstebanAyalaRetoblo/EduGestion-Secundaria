@@ -1,0 +1,7 @@
+# Copiar como development.local.properties cuando se conozcan las rutas reales.
+# Windows: usar / como separador y no usar comillas.
+# Alternativa predeterminada: variables JAVA8_HOME y GLASSFISH_HOME.
+# jdk.home=C:/ruta/al/jdk8
+# glassfish.home=C:/ruta/a/glassfish-4.1.1/glassfish
+# mysql.connector.jar=lib/mysql-connector-java-5.1.16-bin.jar
+# No colocar contraseñas: la aplicación NO lee este archivo.

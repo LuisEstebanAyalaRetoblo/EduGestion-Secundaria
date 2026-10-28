@@ -1,0 +1,24 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "EduGestion: verificar dependencias (sin compilar)",
+      "type": "process",
+      "command": "${env:JAVA8_HOME}/bin/java",
+      "args": ["-jar", "${env:ANT_HOME}/lib/ant-launcher.jar", "-f", "build-vscode.xml", "verify"],
+      "options": {"cwd": "${workspaceFolder}", "env": {"JAVA_HOME": "${env:JAVA8_HOME}"}},
+      "problemMatcher": [],
+      "presentation": {"reveal": "always", "panel": "dedicated"}
+    },
+    {
+      "label": "EduGestion: generar WAR (sin desplegar)",
+      "type": "process",
+      "command": "${env:JAVA8_HOME}/bin/java",
+      "args": ["-jar", "${env:ANT_HOME}/lib/ant-launcher.jar", "-f", "build-vscode.xml", "war"],
+      "options": {"cwd": "${workspaceFolder}", "env": {"JAVA_HOME": "${env:JAVA8_HOME}"}},
+      "group": {"kind": "build", "isDefault": true},
+      "problemMatcher": ["$javac"],
+      "presentation": {"reveal": "always", "panel": "dedicated"}
+    }
+  ]
+}

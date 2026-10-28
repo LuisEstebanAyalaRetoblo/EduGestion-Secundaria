@@ -1,0 +1,60 @@
+# Salidas de NetBeans, Ant y editores
+/build/
+/dist/
+/dist-vscode/
+/.dev-build/
+/target/
+/out/
+*.class
+*.jar
+*.war
+*.ear
+*.log
+*.tmp
+*.swp
+*.swo
+*~
+
+# Configuración privada por equipo; conservar ejemplos sin secretos
+/nbproject/private/
+/config/development.local.properties
+*.local.properties
+.env
+.env.*
+!.env.example
+!.env.sample
+/.tools/
+/.idea/
+/.settings/
+/.classpath
+/.project
+
+# Credenciales, claves y almacenes de certificados
+credentials.json
+service-account*.json
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+id_rsa*
+id_ed25519*
+.netrc
+.my.cnf
+
+# Respaldos y datos; los scripts SQL de esquema sí se revisan y versionan
+/backups/
+/dumps/
+/data/
+/uploads/
+*.sql.gz
+*.sql.zip
+*.bak
+*.dump
+
+# Archivos del sistema operativo
+.DS_Store
+._*
+Thumbs.db
+Desktop.ini
