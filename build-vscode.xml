@@ -5,8 +5,8 @@
     <property file="config/development.local.properties"/>
     <property name="jdk.home" location="${env.JAVA8_HOME}"/>
     <property name="glassfish.home" location="${env.GLASSFISH_HOME}"/>
-    <property name="mysql.connector.jar" location="lib/mysql-connector-java-5.1.16-bin.jar"/>
-    <property name="jdbc.sha256" value="e2d1339ea279d867fb825e0f1a455014bbee360e2a4a1e425033474d2335525d"/>
+    <property name="mysql.connector.jar" location="${env.EDUGESTION_JDBC_JAR}"/>
+    <property name="jdbc.sha256" value="cef70caf532833c9ab8f41f74773ce22c08bf503fad215c9c2ee1e9db87e759e"/>
 
     <target name="verify" description="Comprueba dependencias sin compilar ni conectar a MySQL.">
         <fail message="Ejecutar Ant con Java 8 (JAVA8_HOME). El runtime del editor puede ser distinto.">
@@ -34,12 +34,25 @@
         </and></condition>
         <fail unless="server.apis.present" message="Faltan API javax Servlet/JSP/JSTL. GLASSFISH_HOME debe ser la carpeta glassfish de GlassFish 4.1.1."/>
         <available file="${mysql.connector.jar}" type="file" property="jdbc.present"/>
-        <fail unless="jdbc.present" message="Falta Connector/J 5.1.16 fuera de build/. Consultar lib/README.md; no se descargara automaticamente."/>
+        <fail unless="jdbc.present" message="Falta Connector/J 26.10.0. Configurar EDUGESTION_JDBC_JAR o -Dmysql.connector.jar con la ruta externa; no se descarga automaticamente."/>
         <checksum file="${mysql.connector.jar}" algorithm="SHA-256" property="${jdbc.sha256}" verifyproperty="jdbc.matches"/>
         <fail message="El JAR JDBC no coincide con la copia auditada. Revisar procedencia y aprobar cualquier cambio de version.">
             <condition><not><equals arg1="${jdbc.matches}" arg2="true"/></not></condition>
         </fail>
         <echo>Dependencias basicas verificadas. No prueba MySQL, la version exacta de GlassFish ni el funcionamiento de las JSP.</echo>
+    </target>
+
+    <target name="demo-test" depends="verify" description="Comprueba datos de muestra sin iniciar servicios ni conectar a MySQL.">
+        <mkdir dir=".dev-build/demo-test"/>
+        <javac destdir=".dev-build/demo-test" includes="Demo/DatosDemo.java,Demo/DatosDemoTest.java"
+               source="1.8" target="1.8" encoding="UTF-8" includeantruntime="false"
+               fork="true" executable="${javac.path}">
+            <src path="src/java"/>
+            <src path="tests/java"/>
+        </javac>
+        <java classname="Demo.DatosDemoTest" fork="true" failonerror="true" jvm="${jdk.home}/bin/java">
+            <classpath><pathelement location=".dev-build/demo-test"/></classpath>
+        </java>
     </target>
 
     <target name="war" depends="verify" description="Compila fuentes y genera WAR sin iniciar ni desplegar el sistema.">

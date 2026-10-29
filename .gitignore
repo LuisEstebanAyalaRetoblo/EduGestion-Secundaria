@@ -58,3 +58,8 @@ id_ed25519*
 ._*
 Thumbs.db
 Desktop.ini
+
+# Informes académicos y adjuntos pueden contener datos personales
+*.docx
+*.doc
+*.pdf
